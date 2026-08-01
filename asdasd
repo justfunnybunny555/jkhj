@@ -1,0 +1,49 @@
+local CustomTantoSkin = true 
+
+local TantoTextureID = "rbxassetid://13423465595"
+local TantoAnimationID = "rbxassetid://8254762807"
+
+if CustomTantoSkin then
+    game:GetService('RunService'):BindToRenderStep("TantoSkinChanger", 0, function()
+        local character = game.Players.LocalPlayer.Character
+        if not character then return end
+        
+        -- Ищем нож в руках (Tanto или [Tanto])
+        local tanto = character:FindFirstChild("Tanto") or character:FindFirstChild("[Tanto]")
+        
+        if tanto then
+            -- Проходимся абсолютно по всем объектам внутри ножа
+            for _, obj in pairs(tanto:GetDescendants()) do
+                
+                -- 1. Если текстура лежит в MeshPart
+                if obj:IsA("MeshPart") then
+                    if obj.TextureID ~= TantoTextureID then
+                        obj.TextureID = TantoTextureID
+                    end
+                    
+                -- 2. Если текстура лежит в SpecialMesh (самый частый вариант для ножей)
+                elseif obj:IsA("SpecialMesh") then
+                    if obj.TextureId ~= TantoTextureID then
+                        obj.TextureId = TantoTextureID
+                    end
+                    
+                -- 3. Если текстура наклеена как Decal или Texture
+                elseif obj:IsA("Decal") or obj:IsA("Texture") then
+                    if obj.Texture ~= TantoTextureID then
+                        obj.Texture = TantoTextureID
+                    end
+                end
+                
+                -- 4. Замена всех анимаций
+                if obj:IsA("Animation") then
+                    if obj.AnimationId ~= TantoAnimationID then
+                        obj.AnimationId = TantoAnimationID
+                    end
+                end
+                
+            end
+        end
+    end)
+else
+    game:GetService('RunService'):UnbindFromRenderStep("TantoSkinChanger")
+end
